@@ -1,4 +1,4 @@
-var ScrapyTianTang = require("./scrapytiantang.js");
+var ScrapyTianTang = require("./scrapytiantang.js").ScrapyTianTang;
 
 main();
 
