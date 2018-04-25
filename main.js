@@ -1,8 +1,8 @@
-var ScrapyTianTang = require("./scrapytiantang.js").ScrapyTianTang;
+var ScrapyTianTangContent = require("./scrapytiantang.js").ScrapyTianTangContent;
 
 main();
 
 function main() {
-    var scrapyTianTang = new ScrapyTianTang();//天堂往
-    scrapyTianTang.start();
+    var scrapyTianTangContent = new ScrapyTianTangContent();//天堂往
+    scrapyTianTangContent.start();
 }
