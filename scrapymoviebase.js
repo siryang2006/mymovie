@@ -66,7 +66,7 @@ class ScrapyUrls extends ScrapyBase { //解析电影链接
         });
     }
 
-    onGetContentUrlList(obj) {//电影详情页地址列表
+    onGetContentUrlList(doc) {//电影详情页地址列表
         return "";
     }
 

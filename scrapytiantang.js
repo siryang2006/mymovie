@@ -7,28 +7,28 @@ class ScrapyTianTangContent extends ScrapyMovieBase.ScrapyContent {  //解析电
     }
 
     onGetNexUrl() { //获取要爬取的地址
-        return "https://www.baidu.com/";
+        return "https://www.jianshu.com/p/03c5fa0390c8";
     }
 
     onGetMovieUrl(obj) {//电影链接
-        console.log(obj(".lb").text());
+        console.log(obj("body > nav > div > a.btn.sign-up").text());
         return obj('.bri').attr("name");
     }
 
     onGetMovieImage(obj) {//电影图片
-        return obj("#tj_trhao123").attr("href");
+        return obj('.bri').attr("name");
     }
 
     onGetMovieName(obj) {//电影名字
-        return obj("#tj_trhao123").attr("href");
+        return obj('.bri').attr("name");
     }
 
     onGetMovieDescribe(obj) {//电影描述
-        return obj("#tj_trhao123").attr("href");
+        return obj('.bri').attr("name");
     }
 
     onError(error, statusCode) {//出错
-        console.log(error, statusCode);
+        
     }
 };
 
@@ -41,8 +41,8 @@ class ScrapyTianTangUrls extends ScrapyMovieBase.ScrapyUrls { //解析电影链�
         return "https://www.baidu.com/";
     }
 
-    onGetContentUrlList(obj) {//电影详情页地址列表
-        return obj.find("#tj_trhao123").attr("href");
+    onGetContentUrlList(doc) {//电影详情页地址列表
+        return doc.find("#tj_trhao123").attr("href");
     }
 
     onError(error, statusCode) {//出错
