@@ -11,8 +11,8 @@ class ScrapyContent extends ScrapyBase {  //解析电影详细内容
         this.sql = new MovieContentMysqlDB(config.host, config.user, config.password, config.database, config.port);
     }
 
-    onGetNexUrl() { //获取要爬取的地址
-        return "";
+    onGetNexUrl(callback) { //获取要爬取的地址
+        this.sql.getNextUrlToParse(callback);
     }
 
     onGetMovieUrl(obj) {//电影链接
@@ -39,7 +39,7 @@ class ScrapyContent extends ScrapyBase {  //解析电影详细内容
         return "";
     }
 
-    onParse(body) {//解析内容
+    onParse(body, url) {//解析内容
         //console.log(body);
         var $ = cheerio.load(body,{
             ignoreWhitespace:true/*,
@@ -54,11 +54,13 @@ class ScrapyContent extends ScrapyBase {  //解析电影详细内容
 
         console.log(movieName, movieUrl, movieImage, movieDescripe);
 
-        this.sql.insert(movieName, movieImage, movieDescripe, movieUrl,  movieTime, movieRatio)
+        console.log("=================-",url);
+
+        this.sql.insert(movieName, movieImage, movieDescripe, movieUrl,  movieTime, movieRatio, url)
     }
 
-    onError(error, statusCode) {//出错
-        super.onError(error, statusCode);
+    onError(error, statusCode, url) {//出错
+        super.onError(error, statusCode, url);
     }
 };
 
@@ -68,15 +70,15 @@ class ScrapyUrls extends ScrapyBase { //解析电影链接
         this.mysql = new MovieUrlMysqlDB(config.host, config.user, config.password, config.database, config.port);
     }
 
-    onGetNexUrl() { //获取要爬取的地址
-        return "";
+    onGetNexUrl(callback) { //获取要爬取的地址
+        callback(null, "");
     }
 
     onGetContentUrlList(obj) {//电影详情页地址列表
         return (new Array());
     }
 
-    onParse(body) {//解析
+    onParse(body, url) {//解析
         //console.log(body);
         var $ = cheerio.load(body, {
             ignoreWhitespace:true/*,
@@ -84,14 +86,14 @@ class ScrapyUrls extends ScrapyBase { //解析电影链接
         console.log("-----" + $('input.s_btn').attr('class'));
 
         var content = this.onGetContentUrlList($);
-        content.forEach(url => {
-            console.log("url:", url); 
-            this.mysql.insert(url); 
+        content.forEach(link => {
+            console.log("link url:", link); 
+            this.mysql.insert(link); 
         });
     }
 
-    onError(error, statusCode) {//出错
-        super.onError(error, statusCode);
+    onError(error, statusCode, url) {//出错
+        super.onError(error, statusCode, url);
     }
 };
 
