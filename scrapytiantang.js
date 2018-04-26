@@ -27,6 +27,10 @@ class ScrapyTianTangContent extends ScrapyMovieBase.ScrapyContent {  //解析电
         return obj('.bri').attr("name");
     }
 
+    onParse(body) {//解析内容
+        super.onParse(body);
+    }
+
     onError(error, statusCode) {//出错
         
     }
