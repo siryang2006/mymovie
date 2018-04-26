@@ -1,9 +1,14 @@
 var ScrapyBase = require("./scrapybase.js");
+var MovieContentMysqlDB = require("./mysqldb.js").MovieMysqlDB;
+var MovieUrlMysqlDB = require("./mysqldb.js").MovieUrlMysqlDB;
 var cheerio = require('cheerio');
+
+var config = require("./config.js");
 
 class ScrapyContent extends ScrapyBase {  //解析电影详细内容
     constructor() {
         super(); //  调用父类的 constructor()
+        this.sql = new MovieContentMysqlDB(config.host, config.user, config.password, config.database, config.port);
     }
 
     onGetNexUrl() { //获取要爬取的地址
@@ -26,52 +31,67 @@ class ScrapyContent extends ScrapyBase {  //解析电影详细内容
         return "";
     }
 
+    onGetMovieTime(obj) {
+        return "";
+    }
+
+    onGetMovieRatio(obj) {
+        return "";
+    }
+
     onParse(body) {//解析内容
         //console.log(body);
-        var $ = cheerio.load(body);
+        var $ = cheerio.load(body,{
+            ignoreWhitespace:true/*,
+        xmlMode:true*/});
         console.log("-----" + $('input.s_btn').attr('class'));
         var movieName = this.onGetMovieName($);
         var movieUrl = this.onGetMovieUrl($);
         var movieImage = this.onGetMovieImage($);
-        var movieDescripeName = this.onGetMovieDescribe($);
+        var movieDescripe = this.onGetMovieDescribe($);
+        var movieTime = this.onGetMovieTime($);
+        var movieRatio = this.onGetMovieRatio($);
 
-        console.log(movieName, movieUrl, movieImage, movieDescripeName);
+        console.log(movieName, movieUrl, movieImage, movieDescripe);
+
+        this.sql.insert(movieName, movieImage, movieDescripe, movieUrl,  movieTime, movieRatio)
     }
 
     onError(error, statusCode) {//出错
-        console.log(error, statusCode);
+        super.onError(error, statusCode);
     }
 };
 
 class ScrapyUrls extends ScrapyBase { //解析电影链接
     constructor() {
         super(); //  调用父类的 constructor()
+        this.mysql = new MovieUrlMysqlDB(config.host, config.user, config.password, config.database, config.port);
     }
 
     onGetNexUrl() { //获取要爬取的地址
         return "";
     }
 
+    onGetContentUrlList(obj) {//电影详情页地址列表
+        return (new Array());
+    }
+
     onParse(body) {//解析
         //console.log(body);
-        var $ = cheerio.load(body);//解析链接入库
+        var $ = cheerio.load(body, {
+            ignoreWhitespace:true/*,
+        xmlMode:true*/});//解析链接入库
         console.log("-----" + $('input.s_btn').attr('class'));
 
-        var content = onGetContentUrlList($);
-        $.each(function (content) {
-            var url = $(this); 
+        var content = this.onGetContentUrlList($);
+        content.forEach(url => {
             console.log("url:", url); 
-            //var chapterTitle = chapter.find('strong').text(); //找到章节标题  
-            //var videos = chapter.find('.video').children('li');  
+            this.mysql.insert(url); 
         });
     }
 
-    onGetContentUrlList(doc) {//电影详情页地址列表
-        return "";
-    }
-
     onError(error, statusCode) {//出错
-        console.log(error, statusCode);
+        super.onError(error, statusCode);
     }
 };
 

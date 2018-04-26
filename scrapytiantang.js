@@ -12,27 +12,31 @@ class ScrapyTianTangContent extends ScrapyMovieBase.ScrapyContent {  //解析电
 
     onGetMovieUrl(obj) {//电影链接
         console.log(obj("body > nav > div > a.btn.sign-up").text());
-        return obj('.bri').attr("name");
+        return "http://url";
     }
 
     onGetMovieImage(obj) {//电影图片
-        return obj('.bri').attr("name");
+        return "image url";
     }
 
     onGetMovieName(obj) {//电影名字
-        return obj('.bri').attr("name");
+        return "name";
     }
 
     onGetMovieDescribe(obj) {//电影描述
-        return obj('.bri').attr("name");
+        return "good job";
     }
 
-    onParse(body) {//解析内容
-        super.onParse(body);
+    onGetMovieTime(obj) {
+        return "2018-04-04 00:00:00";
+    }
+
+    onGetMovieRatio(obj) {
+        return "1024*1024";
     }
 
     onError(error, statusCode) {//出错
-        
+        super.onError(error, statusCode);
     }
 };
 
@@ -45,12 +49,18 @@ class ScrapyTianTangUrls extends ScrapyMovieBase.ScrapyUrls { //解析电影链�
         return "https://www.baidu.com/";
     }
 
-    onGetContentUrlList(doc) {//电影详情页地址列表
-        return doc.find("#tj_trhao123").attr("href");
+    onGetContentUrlList(obj) {//电影详情页地址列表
+        var list = new Array();
+        list.push("url");
+        /*obj("#tj_trhao123").each(function(i, e) {
+            console.log($(e).attr("href"));
+            list.push($(e).attr("href"));
+        });*/
+        return list;
     }
 
     onError(error, statusCode) {//出错
-        console.log(error, statusCode);
+        super.onError(error, statusCode);
     }
 };
 
