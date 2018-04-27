@@ -46,17 +46,16 @@ class ScrapyTianTangUrls extends ScrapyMovieBase.ScrapyUrls { //解析电影链�
     }
 
     onGetNexUrl(callback) { //获取要爬取的地址
-        callback(null, "https://www.jianshu.com/p/03c5fa0390c8");
+        callback(null, "http://www.ygdy8.net/html/gndy/china/index.html");//http://www.ygdy8.net/html/gndy/china/list_4_4.html
         //super.onGetNexUrl(callback);
     }
 
     onGetContentUrlList(obj) {//电影详情页地址列表
         var list = new Array();
-        list.push("https://www.jianshu.com/p/03c5fa0390c8");
-        /*obj("#tj_trhao123").each(function(i, e) {
-            console.log($(e).attr("href"));
-            list.push($(e).attr("href"));
-        });*/
+        obj("html body div#header div.contain div.bd2 div.bd3 div.bd3r div.co_area2 div.co_content8 ul table").each(function(i, e) {
+            console.log(obj(e).find("tbody tr td b a.ulink:nth-child(2)").attr("href"));
+            list.push(obj(e).find("tbody tr td b a.ulink:nth-child(2)").attr("href"));
+        });
         return list;
     }
 

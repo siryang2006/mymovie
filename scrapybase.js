@@ -32,7 +32,7 @@ class ScrapyBase {
     }
 
     onParse(body, url) {//解析
-        console.log(body);
+        //console.log(body);
     }
 
     onError(error, statusCode, url) {//出错
@@ -49,7 +49,7 @@ class ScrapyBase {
             }
 
             if (this.stop == true) {
-                //self.startNext();//继续下一个爬取
+                self.startNext();//继续下一个爬取
             }
         });
     }

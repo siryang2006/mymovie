@@ -83,13 +83,12 @@ class ScrapyUrls extends ScrapyBase { //解析电影链接
         var $ = cheerio.load(body, {
             ignoreWhitespace:true/*,
         xmlMode:true*/});//解析链接入库
-        console.log("-----" + $('input.s_btn').attr('class'));
 
         var content = this.onGetContentUrlList($);
-        content.forEach(link => {
-            console.log("link url:", link); 
+        for(var i=0; i<content.length; i++) {
+            var link = content[i];
             this.mysql.insert(link); 
-        });
+        }
     }
 
     onError(error, statusCode, url) {//出错
