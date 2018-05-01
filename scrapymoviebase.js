@@ -3,92 +3,124 @@ var MovieContentMysqlDB = require("./mysqldb.js").MovieMysqlDB;
 var MovieUrlMysqlDB = require("./mysqldb.js").MovieUrlMysqlDB;
 var cheerio = require('cheerio');
 
-var config = require("./config.js");
+var config = require("./config.js").config;
+var Movie = require("./movie.js").Movie;
 
 class ScrapyContent extends ScrapyBase {  //解析电影详细内容
-    constructor() {
-        super(); //  调用父类的 constructor()
+    constructor(finishedCallBack, movieList) {
+        super(finishedCallBack, movieList); //  调用父类的 constructor()
+        this.currentIndex = 0;
+        
         this.sql = new MovieContentMysqlDB(config.host, config.user, config.password, config.database, config.port);
     }
 
     onGetNexUrl(callback) { //获取要爬取的地址
-        this.sql.getNextUrlToParse(callback);
+        if (this.currentIndex >= this.movieList.length) {//没有要爬取的数据了
+            this.finishedCallBack(this.movieList);
+            this.currentMovie = null;
+            return;
+        }
+
+        var currentMovie = this.movieList[this.currentIndex];
+        this.currentIndex = this.currentIndex  + 1;
+
+        callback(null, currentMovie.getContentUrl(), currentMovie);
+        
+        //this.sql.getNextUrlToParse(callback);
     }
 
-    onGetMovieUrl(obj) {//电影链接
+    onGetActor(obj, body) { //主演
         return "";
     }
 
-    onGetMovieImage(obj) {//电影图片
+    onGetRelaseTime(obj, body) {//上映时间
         return "";
     }
 
-    onGetMovieName(obj) {//电影名字
+    onGetRegion(obj, body) {//地区
         return "";
     }
 
-    onGetMovieDescribe(obj) {//电影描述
+    onGetMovieUrl(obj, body) {//电影链接
         return "";
     }
 
-    onGetMovieTime(obj) {
+    onGetMovieImage(obj, body) {//电影图片
         return "";
     }
 
-    onGetMovieRatio(obj) {
+    onGetMovieName(obj, body) {//电影名字
         return "";
     }
 
-    onParse(body, url) {//解析内容
-        //console.log(body);
-        var $ = cheerio.load(body,{
-            ignoreWhitespace:true/*,
-        xmlMode:true*/});
-        console.log("-----" + $('input.s_btn').attr('class'));
-        var movieName = this.onGetMovieName($);
-        var movieUrl = this.onGetMovieUrl($);
-        var movieImage = this.onGetMovieImage($);
-        var movieDescripe = this.onGetMovieDescribe($);
-        var movieTime = this.onGetMovieTime($);
-        var movieRatio = this.onGetMovieRatio($);
-
-        console.log(movieName, movieUrl, movieImage, movieDescripe);
-
-        console.log("=================-",url);
-
-        this.sql.insert(movieName, movieImage, movieDescripe, movieUrl,  movieTime, movieRatio, url)
+    onGetMovieDescribe(obj, body) {//电影描述
+        return "";
     }
 
-    onError(error, statusCode, url) {//出错
-        super.onError(error, statusCode, url);
+    onGetMovieTime(obj, body) {
+        return "";
+    }
+
+    onGetMovieRatio(obj, body) {
+        return "";
+    }
+
+    onGetMovieType(obj, body) {
+        return -1;
+    }
+
+    onDecode(text) {//解码
+        return text;
+    }
+
+    onParse(body, url, movieObject) {//解析内容
+        body = this.onDecode(body);
+        var $ = cheerio.load(body, {ignoreWhitespace:true});
+        var movieName = this.onGetMovieName($, body);
+        var movieUrl = this.onGetMovieUrl($, body);
+        var movieImage = this.onGetMovieImage($, body);
+        var movieDescripe = this.onGetMovieDescribe($, body);
+        var movieTime = this.onGetMovieTime($, body);
+        var movieRatio = this.onGetMovieRatio($, body);
+        var movieType = this.onGetMovieType($, body);
+
+        movieObject.image = movieImage;
+        movieObject.describe = movieDescripe;
+        movieObject.ratio = movieRatio;
+        movieObject.type = movieType;
+        movieObject.time = movieTime;
+        movieObject.url = movieUrl;
+
+        //console.log(movieObject);
+    }
+
+    onError(err, statusCode, url) {//出错
+        super.onError(err, statusCode, url);
     }
 };
 
 class ScrapyUrls extends ScrapyBase { //解析电影链接
-    constructor() {
-        super(); //  调用父类的 constructor()
+    constructor(finishedCallBack, movieList) {
+        super(finishedCallBack, movieList); //  调用父类的 constructor()
         this.mysql = new MovieUrlMysqlDB(config.host, config.user, config.password, config.database, config.port);
     }
 
     onGetNexUrl(callback) { //获取要爬取的地址
-        callback(null, "");
+        callback(null, ""/*url*/, null);
     }
 
     onGetContentUrlList(obj) {//电影详情页地址列表
         return (new Array());
     }
 
-    onParse(body, url) {//解析
-        //console.log(body);
-        var $ = cheerio.load(body, {
-            ignoreWhitespace:true/*,
-        xmlMode:true*/});//解析链接入库
+    onDecode(text) {//解码
+        return text;
+    }
 
-        var content = this.onGetContentUrlList($);
-        for(var i=0; i<content.length; i++) {
-            var link = content[i];
-            this.mysql.insert(link); 
-        }
+    onParse(body, url, obj) {//解析
+        body = this.onDecode(body);
+        var $ = cheerio.load(body, {ignoreWhitespace:true});//解析链接入库
+        this.movieList = this.movieList.concat(this.onGetContentUrlList($));
     }
 
     onError(error, statusCode, url) {//出错

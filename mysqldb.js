@@ -25,9 +25,14 @@ class mysqlDB {
     query(sql, callback) {
         this.pool.getConnection(function (err, conn) {
             if (err) {
+                console.log("mysql error1:", err);
                 callback(err, null, null);
             } else {
                 conn.query(sql, function (err, results, fields) {
+                    if (err) {
+                        console.log("mysql error:", err);
+                    }
+
                     callback(err, results, fields);  //事件驱动回调  
                     conn.release(); //释放连接  
                 });
@@ -38,20 +43,20 @@ class mysqlDB {
 
 //create database movie;
 //use movie;
-//create table  movies(name varchar(1024), image varchar(1024), `describe` longtext, address varchar(4096), date datetime, ratio varchar(20), updateTime datetime, url varchar(1024) primary key not null);
+//create table  movies(name varchar(1024), image varchar(1024), `describe` longtext, address varchar(4096), type tinyint, date datetime, ratio varchar(20), updateTime datetime, url varchar(1024) primary key not null);
 class MovieMysqlDB extends mysqlDB {
     constructor(host, user, password, database, port) {
         super(host, user, password, database, port);
     }
 
-    insert(name, image, describe, address, time, ratio, url) {
-        var sql = 'update movies set name="' + name + '", image="' + image + '", `describe`="'+describe+'", address="'+address
+    insert(name, image, describe, type, address, time, ratio, url) {
+        var sql = 'update movies set name="' + name + '", image="' + image + '", `describe`="'+describe + ',type="' + type+'", address="'+address
         +'", date="'+time+'", ratio="'+ratio+'", updateTime=now() where url="' + url + '"';
 
         console.log(sql);
 
         super.query(sql, function (err, results, fields) {
-            console.log(err, results, fields);
+            //console.log(err, results, fields);
         });
     }
 
@@ -67,7 +72,7 @@ class MovieMysqlDB extends mysqlDB {
                     callBack(null, "");
                 }
             }
-            console.log(err, results, fields);
+            //console.log(err, results, fields);
         });
     }
 
@@ -91,7 +96,7 @@ class MovieUrlMysqlDB extends mysqlDB {
         console.log(sql);
 
         super.query(sql, function (err, results, fields) {
-            console.log(err, results, fields);
+            //console.log(err, results, fields);
         });
     }
 

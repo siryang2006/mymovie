@@ -11,7 +11,7 @@ let driver = new Builder().forBrowser('firefox').build();
         //await driver.findElement(By.name('q')).sendKeys('webdriver', Key.RETURN);
         //await driver.wait(until.titleIs('百度一下，你就知道'), 1000);
     } catch (err) {
-        console.log(err.name, err.message);
+        console.log("error:", err.name, err.message);
         if ('SessionNotCreatedError' == err.name) {
             await driver.quit();
             //driver = await new Builder().forBrowser('firefox').build();
