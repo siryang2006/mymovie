@@ -33,11 +33,19 @@ class ScrapyContent extends ScrapyBase {  //解析电影详细内容
         return "";
     }
 
-    onGetRelaseTime(obj, body) {//上映时间
+    onGetReleaseTime(obj, body) {//上映时间
         return "";
     }
 
     onGetRegion(obj, body) {//地区
+        return "";
+    }
+
+    onGetDirector(obj, body) {//导演
+        return ""; 
+    }
+
+    onGetScore(obj, body) {
         return "";
     }
 
@@ -76,22 +84,20 @@ class ScrapyContent extends ScrapyBase {  //解析电影详细内容
     onParse(body, url, movieObject) {//解析内容
         body = this.onDecode(body);
         var $ = cheerio.load(body, {ignoreWhitespace:true});
-        var movieName = this.onGetMovieName($, body);
-        var movieUrl = this.onGetMovieUrl($, body);
-        var movieImage = this.onGetMovieImage($, body);
-        var movieDescripe = this.onGetMovieDescribe($, body);
-        var movieTime = this.onGetMovieTime($, body);
-        var movieRatio = this.onGetMovieRatio($, body);
-        var movieType = this.onGetMovieType($, body);
+        movieObject.name = this.onGetMovieName($, body);
+        movieObject.url = this.onGetMovieUrl($, body);
+        movieObject.image = this.onGetMovieImage($, body);
+        movieObject.describe = this.onGetMovieDescribe($, body);
+        movieObject.time = this.onGetMovieTime($, body);
+        movieObject.ratio = this.onGetMovieRatio($, body);
+        movieObject.type = this.onGetMovieType($, body);
+        movieObject.releaseTime = this.onGetReleaseTime($, body);
+        movieObject.region = this.onGetRegion($, body);
+        movieObject.actor = this.onGetActor($, body);
+        movieObject.director = this.onGetDirector($, body);
+        movieObject.score = this.onGetScore($, body);
 
-        movieObject.image = movieImage;
-        movieObject.describe = movieDescripe;
-        movieObject.ratio = movieRatio;
-        movieObject.type = movieType;
-        movieObject.time = movieTime;
-        movieObject.url = movieUrl;
-
-        //console.log(movieObject);
+        console.log(movieObject);
     }
 
     onError(err, statusCode, url) {//出错

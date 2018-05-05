@@ -11,6 +11,10 @@ class Movie{
         this.time = "";
         this.ratio = "";
         this.type = "";
+
+        this.actor = "";
+        this.releaseTime = "";
+        this.region = "";
     }
 
     setType(type) {

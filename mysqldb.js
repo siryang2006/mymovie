@@ -49,9 +49,30 @@ class MovieMysqlDB extends mysqlDB {
         super(host, user, password, database, port);
     }
 
-    insert(name, image, describe, type, address, time, ratio, url) {
-        var sql = 'update movies set name="' + name + '", image="' + image + '", `describe`="'+describe + ',type="' + type+'", address="'+address
-        +'", date="'+time+'", ratio="'+ratio+'", updateTime=now() where url="' + url + '"';
+    /*this.name = name;
+        this.time = time;
+        this.contentUrl = contentUrl;
+        this.score = score;
+
+        this.url = "";
+        this.image = "";
+        this.describe = "";
+        this.time = "";
+        this.ratio = "";
+        this.type = "";
+
+        this.actor = "";
+        this.releaseTime = "";
+        this.region = "";*/
+
+    update(movieObject) {
+        var sql = 'update movies set name="' + movieObject.name 
+        + '", image="' + movieObject.image 
+        + '", `describe`="'+ movieObject.describe 
+        + ',type="' + movieObject.type+'", address="'
+        + movieObject.address +'", date="' + movieObject.time 
+        + '", ratio="' + movieObject.ratio 
+        + '", updateTime=now() where url="' + movieObject.url + '"';
 
         console.log(sql);
 
@@ -60,7 +81,7 @@ class MovieMysqlDB extends mysqlDB {
         });
     }
 
-    getNextUrlToParse(callBack) {
+    /*getNextUrlToParse(callBack) {
         var sql = "select url from movies where name is null or HOUR(timediff(now(),updateTime))>24 limit 1";
         super.query(sql, function (err, results, fields) {
             if (err) {
@@ -74,7 +95,7 @@ class MovieMysqlDB extends mysqlDB {
             }
             //console.log(err, results, fields);
         });
-    }
+    }*/
 
     update() {
 

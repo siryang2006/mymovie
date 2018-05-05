@@ -3,6 +3,7 @@ var cheerio = require('cheerio');
 var urlModel = require("url");
 var Movie = require("./movie.js").Movie;
 var iconv = require('iconv-lite');
+var Utils = require("./utils.js").Utils;
 
 class ScrapyTianTangContent extends ScrapyMovieBase.ScrapyContent {  //解析电影详细内容
     constructor(finishedCallBack, movieList) {
@@ -13,20 +14,62 @@ class ScrapyTianTangContent extends ScrapyMovieBase.ScrapyContent {  //解析电
         super.onGetNexUrl(callback);
     }
 
-    onGetActor(obj, body) { //主演
-
+    removeTage(src, tagText) { //去掉标签
+        src = Utils.trimAll(src);
+        if (src.indexOf(tagText)  != 0 ) {
+            console.log("warning: remove tag failed", src, tagText);
+            return "";
+        }
+        
+        return src.replace(tagText, "");
     }
 
-    onGetRelaseTime(obj, body) {//上映时间
+    getContentByTag(src, tagText) {
+        var arr = src.split("◎");
+        for (var i=0; i<arr.length; i++) {
+            var text = Utils.trimAll(arr[i]);
+            if (text.indexOf(tagText) == 0) {
+                return text.replace(tagText, "");
+            }
+        }
 
+        console.log("[warning]get tag failed ", tagText);
+        return "";
+    }
+
+    onGetActor(obj, body) { //主演
+        return this.getContentByTag(obj("div#Zoom p:nth-child(1)").text(), "主演");
+    }
+
+    onGetDirector(obj, body) {
+        return this.getContentByTag(obj("div#Zoom p:nth-child(1)").text(), "导演"); 
+    }
+
+    onGetReleaseTime(obj, body) {//上映时间
+        return this.getContentByTag(obj("div#Zoom p:nth-child(1)").text(), "上映日期");
     }
 
     onGetRegion(obj, body) {//地区
-
+        return this.getContentByTag(obj("div#Zoom p:nth-child(1)").text(), "地区");
     }
 
+    //html body div#header div.contain div.bd2 div.bd3 div.co_area2 div.co_content8 ul div#Zoom span p a
     onGetMovieUrl(obj, body) {//电影链接
-        return obj("div.co_content8 ul div#Zoom span table").html();//.attr("thunderrestitle");
+        var url = obj("html body div#header div.contain div.bd2 div.bd3 div.co_area2 div.co_content8 ul div#Zoom span p:nth-child(2)").text(); 
+        var startIndex = url.indexOf("ftp:");
+        if (startIndex == -1) {
+            console.log("error: get movie download url failed!!!");
+            return "";
+        }
+
+        var text = ".rmvb";
+        var endIndex = url.indexOf(text);
+        if (endIndex == -1) {
+            console.log("error: get movie download url failed!!!", url);
+            return "";
+        }
+
+        return url.substr(startIndex, endIndex);
     }
 
     onGetMovieImage(obj, body) {//电影图片
@@ -34,23 +77,27 @@ class ScrapyTianTangContent extends ScrapyMovieBase.ScrapyContent {  //解析电
     }
 
     onGetMovieName(obj, body) {//电影名字
-        return obj("div#Zoom p:nth-child(1)").text().split("◎")[0];
+        return this.getContentByTag(obj("div#Zoom p:nth-child(1)").text(), "中文名");
     }
 
     onGetMovieDescribe(obj, body) {//电影描述
-        return obj("div#Zoom p:nth-child(1)").text().split("◎")[15];
+        return this.getContentByTag(obj("div#Zoom p:nth-child(1)").text(), "简介");
     }
 
     onGetMovieTime(obj, body) {
-        return obj("div#Zoom p:nth-child(1)").text().split("◎")[3];
+        return this.getContentByTag(obj("div#Zoom p:nth-child(1)").text(), "年代");
     }
 
     onGetMovieRatio(obj, body) {
-        return obj("div#Zoom p:nth-child(1)").text().split("◎")[11];
+        return this.getContentByTag(obj("div#Zoom p:nth-child(1)").text(), "视频尺寸");
     }
 
     onGetMovieType(obj, body) {//类型
-        return obj("div#Zoom p:nth-child(1)").text().split("◎")[5];
+        return this.getContentByTag(obj("div#Zoom p:nth-child(1)").text(), "类别");
+    }
+
+    onGetScore(obj, body) {
+        return obj("html body div#header div.contain div.bd2 div.bd3 div.co_area2 div.co_content8 ul div.position span strong.rank").text();
     }
 
     onDecode(text) {//解码
