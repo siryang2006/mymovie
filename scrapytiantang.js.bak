@@ -78,6 +78,7 @@ class ScrapyTianTangContent extends ScrapyMovieBase.ScrapyContent {  //解析电
 		var ret = Utils.split(Utils.trimAll(obj("div#Zoom").text()), tags);
 
 		movieObject.name = Utils.getDataByTagFromArray(ret, this.getNameTag(), true);
+		//console.log("==================,,,,,", ret);
 		if(movieObject.name == "") {
 			movieObject.name = obj("div.title_all > h1").text();
 		}

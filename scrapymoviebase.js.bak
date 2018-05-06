@@ -42,7 +42,7 @@ class ScrapyContent extends ScrapyBase {  //解析电影详细内容
         var $ = cheerio.load(body, {ignoreWhitespace:true});
 		this.onParseToMovie(body, $, movieObject);
 
-		this.sql.insert(movieObject);
+this.sql.insert(movieObject);
 
         console.log(movieObject);
     }

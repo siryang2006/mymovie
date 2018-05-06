@@ -67,7 +67,7 @@ class MovieMysqlDB extends mysqlDB {
 	}
 
 	dealData(src) {
-		return Utils.replaceAll(src, "\"", "\\\"");
+		return Utils.replaceAll(src"\"", "\\\"");
 	}
 
 		insert(movieObj) {

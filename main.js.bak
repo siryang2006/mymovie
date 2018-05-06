@@ -20,7 +20,7 @@ class Scrapyer {
 var movieList = new Array();
 var worker = [ //配置
     new Scrapyer("tiantangang-juqing",
-        new ScrapyTianTangUrls("https://www.dy2018.com/2/", 2, function () {
+        new ScrapyTianTangUrls("https://www.dy2018.com/0/", 0, function () {
             startNext();
         }, movieList)),
     new Scrapyer("tiantangang-juqing-content",

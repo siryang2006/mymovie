@@ -95,7 +95,7 @@ class Utils {
 			return "";
 		}
 
-		return src.substring(indexHead, indexTail);
+		return src.substring(indexHead, );
 	}
     /*static Trim(str, is_global) {
         var result;

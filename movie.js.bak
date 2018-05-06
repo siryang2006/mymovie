@@ -10,7 +10,7 @@ class Movie{
         this.describe = "";
         this.time = "";
         this.ratio = "";
-        this.typeText = "";
+        this.type = "";
 		this.describeImage = ""; 
 
         this.actor = "";
